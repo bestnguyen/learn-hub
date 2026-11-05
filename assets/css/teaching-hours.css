@@ -1,0 +1,15 @@
+.hours-filters{display:grid;grid-template-columns:160px repeat(2,minmax(0,1fr)) 160px 44px;gap:12px;align-items:end;margin-bottom:20px}
+.hours-filters>div{min-width:0}
+.hours-filters .btn{width:44px;height:44px;padding:0}
+.hours-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:24px}
+.hours-stats .metric-card{min-width:0}
+.hours-stats .metric-value{font-size:23px;overflow-wrap:anywhere;letter-spacing:0}
+.hours-duration{display:block;margin-top:20px;padding:12px 0;border-top:1px solid var(--line);font-weight:700;color:var(--ink)}
+@media(max-width:767.98px){
+  .hours-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hours-filters .btn{justify-self:end}
+  .hours-stats{grid-template-columns:1fr;gap:12px}
+  .hours-stats .metric-value{font-size:23px}
+  .hours-summary .responsive-records tbody td:nth-child(n+5):not(.record-status):not(.record-actions){display:flex}
+  .hours-summary .responsive-records tbody td:not(.record-primary)::before{flex-basis:100px}
+}

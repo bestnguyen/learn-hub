@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Education Super App · HRM Prototype</title>
+<style>
+:root{
+  --primary:#2563eb;--primary-dark:#1d4ed8;--primary-soft:#eff6ff;
+  --ink:#172033;--muted:#667085;--line:#e7eaf0;--bg:#f6f8fb;--white:#fff;
+  --green:#15966a;--green-bg:#eaf8f1;--orange:#c77716;--orange-bg:#fff5e8;
+  --red:#d14343;--red-bg:#fff0f0;--purple:#7356c8;--purple-bg:#f2efff;
+  --shadow:0 8px 28px rgba(24,39,75,.07);--radius:14px;
+}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);font-size:14px}
+button,input,select,textarea{font:inherit} button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{width:252px;background:#fff;border-right:1px solid var(--line);position:fixed;inset:0 auto 0 0;z-index:20;display:flex;flex-direction:column}
+.brand{height:72px;display:flex;align-items:center;gap:11px;padding:0 22px;border-bottom:1px solid var(--line)}
+.brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#2563eb,#60a5fa);display:grid;place-items:center;color:#fff;font-weight:800}
+.brand strong{font-size:15px;letter-spacing:-.3px}.brand small{display:block;color:#98a2b3;font-size:10px;margin-top:2px}
+.side-scroll{padding:18px 12px;overflow:auto;flex:1}.nav-label{font-size:10px;letter-spacing:1px;color:#98a2b3;font-weight:700;padding:12px 12px 7px}
+.nav-item{border:0;background:transparent;width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:10px 12px;border-radius:9px;color:#596579;margin:2px 0;font-weight:550}
+.nav-item .ico{width:19px;text-align:center;font-size:16px}.nav-item:hover{background:#f6f8fc;color:var(--ink)}.nav-item.active{background:var(--primary-soft);color:var(--primary);font-weight:700}
+.nav-item .count{margin-left:auto;background:#e8efff;color:var(--primary);font-size:10px;padding:2px 7px;border-radius:20px}
+.sidebar-bottom{border-top:1px solid var(--line);padding:14px}.profile-mini{display:flex;align-items:center;gap:10px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#e9efff;color:#3158a8;font-weight:700;flex-shrink:0}.profile-mini b{font-size:12px}.profile-mini small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.main{margin-left:252px;width:calc(100% - 252px);min-width:0}
+.topbar{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:10}
+.breadcrumb{color:var(--muted);font-size:12px}.breadcrumb b{color:var(--ink);font-weight:650}.top-actions{display:flex;align-items:center;gap:14px}.icon-btn{border:1px solid var(--line);background:#fff;border-radius:9px;width:36px;height:36px;color:#647084}.top-user{display:flex;align-items:center;gap:9px;padding-left:12px;border-left:1px solid var(--line)}
+.content{padding:28px 30px 42px;max-width:1500px;margin:0 auto}
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px}
+.eyebrow{font-size:11px;color:var(--primary);font-weight:750;letter-spacing:.7px;text-transform:uppercase;margin-bottom:7px}
+h1{font-size:24px;letter-spacing:-.7px;margin:0 0 6px;font-weight:750} .subtitle{color:var(--muted);font-size:13px}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;color:#344054;border-radius:9px;padding:9px 13px;font-weight:650;font-size:12px;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{background:#f9fafb}.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.primary:hover{background:var(--primary-dark)}.btn.soft{background:var(--primary-soft);color:var(--primary);border-color:#dbe7ff}
+.btn.small{padding:6px 9px;font-size:11px}.btn.danger{color:var(--red)}
+.grid{display:grid;gap:15px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 2px 8px rgba(24,39,75,.025)}
+.stat{padding:17px 18px}.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}.stat-icon{width:33px;height:33px;border-radius:10px;display:grid;place-items:center;font-size:16px;background:var(--primary-soft);color:var(--primary)}
+.stat-value{font-size:26px;font-weight:760;letter-spacing:-.8px;margin:12px 0 4px}.stat-foot{font-size:11px;color:var(--muted)}.positive{color:var(--green)}
+.panel{padding:18px 20px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.panel-title{font-size:14px;font-weight:730}.panel-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.two-col{grid-template-columns:1.35fr 1fr}.three-col{grid-template-columns:repeat(3,1fr)}
+.table-card{overflow:hidden}.toolbar{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.search{position:relative;min-width:220px;max-width:330px;flex:1}.search input{width:100%;padding:9px 12px 9px 34px;border:1px solid var(--line);border-radius:9px;outline:none;background:#fff;font-size:12px}.search:before{content:"⌕";position:absolute;left:12px;top:5px;font-size:20px;color:#98a2b3}
+.filters{display:flex;gap:8px;flex-wrap:wrap}.filters select,.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:#fff;color:#344054;outline:none;font-size:12px;width:100%}.filters select{width:auto;min-width:120px}
+table{width:100%;border-collapse:collapse;white-space:nowrap}th{background:#fafbfc;color:#7b8495;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.55px;font-weight:750;padding:12px 16px;border-bottom:1px solid var(--line)}td{padding:13px 16px;border-bottom:1px solid #f0f2f5;font-size:12px;color:#344054}tbody tr:hover{background:#fbfcff}tbody tr:last-child td{border-bottom:0}
+.person{display:flex;align-items:center;gap:9px}.person .avatar{width:31px;height:31px;font-size:11px}.person b{font-size:12px;color:var(--ink)}.person small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:20px;font-size:10px;font-weight:700}.b-green{background:var(--green-bg);color:var(--green)}.b-orange{background:var(--orange-bg);color:var(--orange)}.b-red{background:var(--red-bg);color:var(--red)}.b-blue{background:var(--primary-soft);color:var(--primary)}.b-purple{background:var(--purple-bg);color:var(--purple)}.b-gray{background:#f1f3f6;color:#667085}
+.link{border:0;background:none;color:var(--primary);font-weight:700;font-size:11px;padding:3px}
+.progress{height:7px;background:#edf0f5;border-radius:10px;overflow:hidden}.progress span{display:block;height:100%;background:var(--primary);border-radius:10px}
+.bar-row{display:grid;grid-template-columns:92px 1fr 38px;align-items:center;gap:12px;margin:15px 0;font-size:11px}.bar-row label{color:#667085}.bar-row b{text-align:right;font-size:11px}
+.activity{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid #f0f2f5}.activity:last-child{border:0}.activity-dot{width:8px;height:8px;border-radius:50%;background:#60a5fa;margin:5px 2px 0}.activity b{font-size:11px}.activity p{margin:4px 0 0;color:var(--muted);font-size:10px}
+.calendar-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.day{border:1px solid var(--line);border-radius:9px;text-align:center;padding:9px 3px}.day small{display:block;color:var(--muted);font-size:10px}.day b{display:block;margin:5px 0;font-size:14px}.day.active{background:var(--primary-soft);border-color:#c9d9ff;color:var(--primary)}
+.empty{padding:36px;text-align:center;color:var(--muted)}
+.section{display:none}.section.active{display:block}
+.tabs{display:flex;gap:5px;border-bottom:1px solid var(--line);margin-bottom:16px}.tab{padding:10px 13px;border:0;background:none;color:var(--muted);font-size:12px;font-weight:650;border-bottom:2px solid transparent}.tab.active{color:var(--primary);border-color:var(--primary)}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.field label{display:block;font-size:11px;color:#667085;font-weight:650;margin-bottom:6px}.field.full{grid-column:1/-1}.field textarea{min-height:72px;resize:vertical}
+.modal-backdrop{position:fixed;inset:0;background:rgba(16,24,40,.42);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}.modal-backdrop.show{display:flex}.modal{background:#fff;width:min(620px,100%);border-radius:16px;box-shadow:0 24px 70px rgba(16,24,40,.22);overflow:hidden;max-height:90vh;display:flex;flex-direction:column}.modal-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modal-head h3{margin:0;font-size:16px}.modal-body{padding:20px 22px;overflow:auto}.modal-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}.x{border:0;background:none;font-size:22px;color:#98a2b3}
+.notice{background:#f5f8ff;border:1px solid #e0eaff;border-radius:10px;padding:12px 14px;color:#45618e;font-size:11px;line-height:1.55}
+.field-help{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:6px}.integration-state{margin:0 16px 14px}.integration-state.ok{color:var(--green)}.integration-state.warn{color:var(--orange)}.session-actions{display:flex;gap:6px;align-items:center}.payroll-hold{color:var(--orange);font-weight:700}
+.quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.quick{border:1px solid var(--line);border-radius:10px;padding:13px;background:#fff;text-align:left}.quick:hover{border-color:#bfd2ff;background:#fbfcff}.quick span{display:block;font-size:18px;margin-bottom:7px}.quick b{font-size:11px}.quick small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.toast{position:fixed;right:24px;bottom:24px;background:#172033;color:#fff;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow);z-index:80;display:none;font-size:12px}.toast.show{display:block}
+.mobile-menu{display:none}
+@media(max-width:1050px){.sidebar{width:220px}.main{margin-left:220px;width:calc(100% - 220px)}.stats{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}}
+@media(max-width:720px){.sidebar{transform:translateX(-100%);transition:.2s}.sidebar.open{transform:translateX(0)}.main{margin:0;width:100%}.topbar{padding:0 16px}.content{padding:20px 14px}.mobile-menu{display:inline-flex}.page-head{flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.three-col{grid-template-columns:1fr}.quick-actions{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.table-card{overflow-x:auto}.top-user .user-meta{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="brand-mark">E</div><div><strong>EDU CENTER</strong><small>Education Super App</small></div></div>
+  <div class="side-scroll">
+    <div class="nav-label">WORKSPACE</div>
+    <button class="nav-item" onclick="toast('CRM là module hiện có trong Super App')"><span class="ico">▦</span> CRM & Admissions</button>
+    <button class="nav-item" onclick="toast('SIS là module hiện có trong Super App')"><span class="ico">▤</span> Classes & Learning</button>
+    <div class="nav-label">HUMAN RESOURCES</div>
+    <button class="nav-item active" data-page="dashboard"><span class="ico">⌂</span> HRM Dashboard</button>
+    <button class="nav-item" data-page="employees"><span class="ico">♙</span> Employees</button>
+    <button class="nav-item" data-page="attendance"><span class="ico">◷</span> Attendance</button>
+    <button class="nav-item" data-page="shifts"><span class="ico">▦</span> Work Shifts</button>
+    <button class="nav-item" data-page="leave"><span class="ico">▧</span> Leave Management <span class="count">3</span></button>
+    <button class="nav-item" data-page="timesheet"><span class="ico">◫</span> Teacher Timesheet</button>
+    <button class="nav-item" data-page="payroll"><span class="ico">＄</span> Payroll</button>
+    <div class="nav-label">CONFIGURATION</div>
+    <button class="nav-item" data-page="settings"><span class="ico">⚙</span> HR Settings</button>
+  </div>
+  <div class="sidebar-bottom"><div class="profile-mini"><div class="avatar">AD</div><div><b>Admin User</b><small>HR Administrator</small></div></div></div>
+</aside>
+<main class="main">
+  <header class="topbar">
+    <div style="display:flex;align-items:center;gap:12px"><button class="icon-btn mobile-menu" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button><div class="breadcrumb">Education Super App&nbsp; / &nbsp;<b id="crumb">HRM Dashboard</b></div></div>
+    <div class="top-actions"><button class="icon-btn" onclick="toast('Không có thông báo mới')">♧</button><button class="icon-btn" onclick="toast('Trợ giúp HRM')">?</button><div class="top-user"><div class="avatar">AD</div><div class="user-meta"><b style="font-size:11px">Admin User</b><small style="display:block;color:#98a2b3;font-size:10px">Administrator</small></div></div></div>
+  </header>
+  <div class="content">
+    <!-- DASHBOARD -->
+    <section class="section active" id="page-dashboard">
+      <div class="page-head"><div><div class="eyebrow">HUMAN RESOURCES</div><h1>HRM Dashboard</h1><div class="subtitle">Tổng quan nhân sự, chấm công và hoạt động trong tháng 11/2026.</div></div><div class="actions"><button class="btn" onclick="toast('Đã chuẩn bị báo cáo HRM')">⇩ Export report</button><button class="btn primary" onclick="openEmployeeModal()">＋ Add employee</button></div></div>
+      <div class="grid stats">
+        <div class="card stat"><div class="stat-top">Total employees <span class="stat-icon">♙</span></div><div class="stat-value">42</div><div class="stat-foot"><span class="positive">↑ 3</span> nhân sự mới trong quý</div></div>
+        <div class="card stat"><div class="stat-top">Present today <span class="stat-icon" style="background:#eaf8f1;color:#15966a">✓</span></div><div class="stat-value">18 <span style="font-size:13px;color:#98a2b3;font-weight:500">/ 20</span></div><div class="stat-foot">2 nhân viên chưa check-in</div></div>
+        <div class="card stat"><div class="stat-top">Completed teaching hours <span class="stat-icon" style="background:#f2efff;color:#7356c8">◷</span></div><div class="stat-value" id="dashboardTeachingHours">0h</div><div class="stat-foot">CRM completed sessions · current month</div></div>
+        <div class="card stat"><div class="stat-top">Teaching reviews pending <span class="stat-icon" style="background:#fff5e8;color:#c77716">◷</span></div><div class="stat-value" id="dashboardTeachingPending">0</div><div class="stat-foot">Session mapping, rate or approval</div></div>
+      </div>
+      <div class="grid two-col">
+        <div class="card panel"><div class="panel-head"><div><div class="panel-title">Attendance overview</div><div class="panel-sub">Tình hình chấm công Office hôm nay</div></div><span class="badge b-green">Today · 05 Nov</span></div>
+          <div style="display:flex;align-items:center;gap:22px;padding:8px 4px 16px"><div style="width:124px;height:124px;border-radius:50%;background:conic-gradient(#2563eb 0 78%,#e8edf5 78% 100%);display:grid;place-items:center;flex-shrink:0"><div style="width:91px;height:91px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center"><div><b style="font-size:25px">90%</b><small style="display:block;color:#98a2b3;font-size:10px">Attendance</small></div></div></div><div style="flex:1"><div class="bar-row"><label>Present</label><div class="progress"><span style="width:90%"></span></div><b>18</b></div><div class="bar-row"><label>Late</label><div class="progress"><span style="width:10%;background:#e9a23b"></span></div><b>2</b></div><div class="bar-row"><label>Absent</label><div class="progress"><span style="width:0%;background:#d14343"></span></div><b>0</b></div></div></div>
+          <div class="notice">Dữ liệu chấm công demo. Nhân viên Office chấm công theo ca được phân công; Teacher Timesheet lấy từ Lesson Session của SIS.</div>
+        </div>
+        <div class="card panel"><div class="panel-head"><div><div class="panel-title">Pending actions</div><div class="panel-sub">Các yêu cầu cần xử lý</div></div><button class="link" onclick="navigate('leave')">View all →</button></div>
+          <div class="activity"><div class="activity-dot" style="background:#e9a23b"></div><div><b>Leave requests</b><p>3 requests pending review</p></div><span class="badge b-orange" style="margin-left:auto">Pending</span></div>
+          <div id="dashboardTimesheetActions"></div>
+        </div>
+      </div>
+      <div class="grid two-col" style="margin-top:15px">
+        <div class="card panel"><div class="panel-head"><div><div class="panel-title">Completed teaching hours by subject</div><div class="panel-sub">Source: CRM completed sessions</div></div><button class="link" onclick="navigate('timesheet')">Details →</button></div>
+        </div>
+        <div class="card panel"><div class="panel-head"><div><div class="panel-title">Quick actions</div><div class="panel-sub">Truy cập nhanh nghiệp vụ HRM</div></div></div>
+          <div class="quick-actions"><button class="quick" onclick="openEmployeeModal()"><span>♙</span><b>Add employee</b><small>Tạo hồ sơ nhân viên</small></button><button class="quick" onclick="navigate('leave')"><span>▧</span><b>Review leave</b><small>Duyệt đơn nghỉ phép</small></button><button class="quick" onclick="navigate('payroll')"><span>＄</span><b>Generate payroll</b><small>Tạo bảng lương tháng</small></button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EMPLOYEES -->
+    <section class="section" id="page-employees">
+      <div class="page-head"><div><div class="eyebrow">PEOPLE DIRECTORY</div><h1>Employees</h1><div class="subtitle">Quản lý hồ sơ giáo viên và nhân viên trung tâm.</div></div><div class="actions"><button class="btn" onclick="toast('Đã chuẩn bị file danh sách nhân viên')">⇩ Export</button><button class="btn primary" onclick="openEmployeeModal()">＋ Add employee</button></div></div>
+      <div class="card table-card"><div class="toolbar"><div class="search"><input id="employeeSearch" placeholder="Tìm theo tên, mã nhân viên, email..." oninput="filterEmployees()"></div><div class="filters"><select id="employeeTypeFilter" onchange="filterEmployees()"><option value="">All types</option><option>Teacher</option><option>Office</option></select><select id="employeeStatusFilter" onchange="filterEmployees()"><option value="">All status</option><option>Active</option><option>Inactive</option></select><button class="btn small" onclick="resetEmployeeFilters()">Reset</button></div></div><div id="employeeIntegrationNotice" class="notice integration-state" style="margin:12px 16px" role="status"></div>
+      <table><thead><tr><th>Employee</th><th>Employee ID</th><th>Department</th><th>Employment</th><th>Salary type</th><th>Status</th><th>CRM Teacher link</th><th>Action</th></tr></thead><tbody id="employeeRows">
+      <tr data-type="Teacher" data-status="Active"><td><div class="person"><div class="avatar">TA</div><div><b>Nguyen Minh Anh</b><small>minhanh@educenter.vn</small></div></div></td><td>TEA-001</td><td>English</td><td>Full-time</td><td>Hourly</td><td><span class="badge b-green">Active</span></td><td data-crm-teacher-link>Unlinked</td><td><button class="link" onclick="editEmployee('Nguyen Minh Anh','TEA-001','Teacher','English','Hourly')">Edit</button></td></tr>
+      <tr data-type="Teacher" data-status="Active"><td><div class="person"><div class="avatar" style="background:#f2efff;color:#7356c8">TB</div><div><b>Tran Quoc Bao</b><small>quocbao@educenter.vn</small></div></div></td><td>TEA-002</td><td>Physics</td><td>Part-time</td><td>Hourly</td><td><span class="badge b-green">Active</span></td><td data-crm-teacher-link>Unlinked</td><td><button class="link" onclick="editEmployee('Tran Quoc Bao','TEA-002','Teacher','Physics','Hourly')">Edit</button></td></tr>
+      <tr data-type="Teacher" data-status="Active"><td><div class="person"><div class="avatar" style="background:#eaf8f1;color:#15966a">PC</div><div><b>Pham Thu Chi</b><small>thuchi@educenter.vn</small></div></div></td><td>TEA-003</td><td>Chemistry</td><td>Part-time</td><td>Hourly</td><td><span class="badge b-green">Active</span></td><td data-crm-teacher-link>Unlinked</td><td><button class="link" onclick="editEmployee('Pham Thu Chi','TEA-003','Teacher','Chemistry','Hourly')">Edit</button></td></tr>
+      <tr data-type="Office" data-status="Active"><td><div class="person"><div class="avatar" style="background:#fff5e8;color:#c77716">LH</div><div><b>Le Thu Ha</b><small>thuha@educenter.vn</small></div></div></td><td>OFF-001</td><td>Operations</td><td>Full-time</td><td>Monthly</td><td><span class="badge b-green">Active</span></td><td data-crm-teacher-link>—</td><td><button class="link" onclick="editEmployee('Le Thu Ha','OFF-001','Office','Operations','Monthly')">Edit</button></td></tr>
+      <tr data-type="Office" data-status="Active"><td><div class="person"><div class="avatar" style="background:#eaf1ff;color:#3158a8">VN</div><div><b>Vo Ngoc Nam</b><small>ngocnam@educenter.vn</small></div></div></td><td>OFF-002</td><td>Admissions</td><td>Full-time</td><td>Monthly</td><td><span class="badge b-green">Active</span></td><td data-crm-teacher-link>—</td><td><button class="link" onclick="editEmployee('Vo Ngoc Nam','OFF-002','Office','Admissions','Monthly')">Edit</button></td></tr>
+      <tr data-type="Office" data-status="Inactive"><td><div class="person"><div class="avatar" style="background:#f1f3f6;color:#667085">DT</div><div><b>Do Minh Tam</b><small>minhtam@educenter.vn</small></div></div></td><td>OFF-003</td><td>Operations</td><td>Part-time</td><td>Monthly</td><td><span class="badge b-gray">Inactive</span></td><td data-crm-teacher-link>—</td><td><button class="link" onclick="editEmployee('Do Minh Tam','OFF-003','Office','Operations','Monthly')">Edit</button></td></tr>
+      </tbody></table><div class="toolbar" style="border-top:1px solid var(--line);border-bottom:0"><small style="color:#98a2b3" id="employeeCount">Showing 6 employees</small><div><button class="btn small" onclick="toast('Đang ở trang 1')">‹</button> <button class="btn small soft">1</button> <button class="btn small" onclick="toast('Demo chỉ có một trang')">›</button></div></div></div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section class="section" id="page-attendance">
+      <div class="page-head"><div><div class="eyebrow">TIME & ATTENDANCE</div><h1>Attendance</h1><div class="subtitle">Theo dõi chấm công theo ca của nhân viên Office.</div></div><div class="actions"><button class="btn" onclick="toast('Đã chuẩn bị báo cáo chấm công')">⇩ Export</button><button class="btn primary" onclick="toast('Mở form điều chỉnh công (demo)')">＋ Attendance adjustment</button></div></div>
+      <div class="grid stats"><div class="card stat"><div class="stat-top">Scheduled today</div><div class="stat-value">20</div><div class="stat-foot">Office employees</div></div><div class="card stat"><div class="stat-top">Present</div><div class="stat-value">18</div><div class="stat-foot positive">90% attendance</div></div><div class="card stat"><div class="stat-top">Late arrivals</div><div class="stat-value">2</div><div class="stat-foot">Over grace period</div></div><div class="card stat"><div class="stat-top">Missing check-out</div><div class="stat-value">1</div><div class="stat-foot">Need review</div></div></div>
+      <div class="card panel" style="margin-bottom:15px"><div class="panel-head"><div><div class="panel-title">Attendance date</div><div class="panel-sub">Chọn ngày để xem dữ liệu chấm công</div></div><input type="date" value="2026-11-05" style="border:1px solid var(--line);padding:8px;border-radius:8px;color:#344054"></div><div class="calendar-strip"><div class="day"><small>MON</small><b>02</b><small>18 / 20</small></div><div class="day"><small>TUE</small><b>03</b><small>19 / 20</small></div><div class="day"><small>WED</small><b>04</b><small>17 / 20</small></div><div class="day active"><small>THU</small><b>05</b><small>18 / 20</small></div><div class="day"><small>FRI</small><b>06</b><small>—</small></div><div class="day"><small>SAT</small><b>07</b><small>—</small></div><div class="day"><small>SUN</small><b>08</b><small>Off</small></div></div></div>
+      <div class="card table-card"><div class="toolbar"><div class="search"><input placeholder="Search employee..."></div><div class="filters"><select><option>All shifts</option><option>Office Standard</option><option>Morning</option></select><select><option>All status</option><option>Present</option><option>Late</option><option>Missing checkout</option></select></div></div>
+      <table><thead><tr><th>Employee</th><th>Shift</th><th>Check-in</th><th>Check-out</th><th>Working time</th><th>Location / Method</th><th>Status</th></tr></thead><tbody>
+      <tr><td><div class="person"><div class="avatar">LH</div><b>Le Thu Ha</b></div></td><td>Office Standard</td><td>08:02</td><td>17:04</td><td>8h 02m</td><td>Center · GPS + QR</td><td><span class="badge b-green">Present</span></td></tr>
+      <tr><td><div class="person"><div class="avatar">VN</div><b>Vo Ngoc Nam</b></div></td><td>Office Standard</td><td>08:12</td><td>—</td><td>—</td><td>Center · GPS</td><td><span class="badge b-orange">Missing checkout</span></td></tr>
+      <tr><td><div class="person"><div class="avatar">HT</div><b>Hoang Mai Trang</b></div></td><td>Morning</td><td>08:09</td><td>12:05</td><td>3h 56m</td><td>Center · QR</td><td><span class="badge b-orange">Late</span></td></tr>
+      <tr><td><div class="person"><div class="avatar">PD</div><b>Phan Duc Long</b></div></td><td>Office Standard</td><td>07:56</td><td>17:00</td><td>8h 04m</td><td>Center · GPS + QR</td><td><span class="badge b-green">Present</span></td></tr>
+      </tbody></table></div>
+      <div class="notice" style="margin-top:14px">Teacher không chấm công theo bảng này. Giờ dạy giáo viên được tổng hợp từ Lesson Session đã hoàn thành trong SIS.</div>
+    </section>
+
+    <!-- SHIFTS -->
+    <section class="section" id="page-shifts">
+      <div class="page-head"><div><div class="eyebrow">WORK PLANNING</div><h1>Work Shifts</h1><div class="subtitle">Cấu hình ca làm việc và phân ca cho nhân viên Office.</div></div><div class="actions"><button class="btn primary" onclick="openShiftModal()">＋ Create shift</button></div></div>
+      <div class="grid three-col">
+        <div class="card panel"><div class="panel-head"><div class="panel-title">Office Standard</div><span class="badge b-green">Active</span></div><div style="font-size:24px;font-weight:750">08:00 – 17:00</div><div class="panel-sub">Monday – Saturday · Break 60 min</div><div style="margin-top:17px;display:flex;justify-content:space-between;font-size:11px"><span style="color:#667085">Assigned employees</span><b>12</b></div></div>
+        <div class="card panel"><div class="panel-head"><div class="panel-title">Morning Shift</div><span class="badge b-green">Active</span></div><div style="font-size:24px;font-weight:750">08:00 – 12:00</div><div class="panel-sub">Monday – Saturday · Break 0 min</div><div style="margin-top:17px;display:flex;justify-content:space-between;font-size:11px"><span style="color:#667085">Assigned employees</span><b>5</b></div></div>
+        <div class="card panel"><div class="panel-head"><div class="panel-title">Afternoon Shift</div><span class="badge b-green">Active</span></div><div style="font-size:24px;font-weight:750">13:00 – 17:00</div><div class="panel-sub">Monday – Saturday · Break 0 min</div><div style="margin-top:17px;display:flex;justify-content:space-between;font-size:11px"><span style="color:#667085">Assigned employees</span><b>3</b></div></div>
+      </div>
+      <div class="card table-card" style="margin-top:16px"><div class="toolbar"><div class="panel-title">Employee shift assignments</div><button class="btn small" onclick="toast('Mở chức năng phân ca hàng loạt')">＋ Assign shifts</button></div><table><thead><tr><th>Employee</th><th>Department</th><th>Shift</th><th>Effective from</th><th>Working days</th><th>Status</th><th>Action</th></tr></thead><tbody>
+      <tr><td><div class="person"><div class="avatar">LH</div><b>Le Thu Ha</b></div></td><td>Operations</td><td>Office Standard</td><td>01 Nov 2026</td><td>Mon – Sat</td><td><span class="badge b-green">Active</span></td><td><button class="link" onclick="toast('Edit shift assignment')">Edit</button></td></tr>
+      <tr><td><div class="person"><div class="avatar">VN</div><b>Vo Ngoc Nam</b></div></td><td>Admissions</td><td>Office Standard</td><td>01 Nov 2026</td><td>Mon – Sat</td><td><span class="badge b-green">Active</span></td><td><button class="link" onclick="toast('Edit shift assignment')">Edit</button></td></tr>
+      <tr><td><div class="person"><div class="avatar">HT</div><b>Hoang Mai Trang</b></div></td><td>Operations</td><td>Morning Shift</td><td>01 Nov 2026</td><td>Mon – Sat</td><td><span class="badge b-green">Active</span></td><td><button class="link" onclick="toast('Edit shift assignment')">Edit</button></td></tr>
+      </tbody></table></div>
+    </section>
+
+    <!-- LEAVE -->
+    <section class="section" id="page-leave">
+      <div class="page-head"><div><div class="eyebrow">TIME OFF</div><h1>Leave Management</h1><div class="subtitle">Quản lý chính sách phép năm, số dư phép và đơn xin nghỉ.</div></div><div class="actions"><button class="btn" onclick="toast('Đã chuẩn bị báo cáo phép')">⇩ Export</button><button class="btn primary" onclick="openLeaveModal()">＋ Create leave request</button></div></div>
+      <div class="grid stats"><div class="card stat"><div class="stat-top">Pending requests</div><div class="stat-value">3</div><div class="stat-foot">Awaiting manager approval</div></div><div class="card stat"><div class="stat-top">Approved this month</div><div class="stat-value">12</div><div class="stat-foot">Leave requests</div></div><div class="card stat"><div class="stat-top">Average balance</div><div class="stat-value">8.4 <small style="font-size:12px;color:#98a2b3">days</small></div><div class="stat-foot">Annual leave remaining</div></div><div class="card stat"><div class="stat-top">Leave policy</div><div class="stat-value">12–15</div><div class="stat-foot">Days per year · configurable</div></div></div>
+      <div class="tabs"><button class="tab active" onclick="switchTab(this,'leaveRequests')">Leave requests</button><button class="tab" onclick="switchTab(this,'leaveBalances')">Leave balances</button><button class="tab" onclick="switchTab(this,'leavePolicies')">Leave policies</button></div>
+      <div id="leaveRequests" class="tab-panel card table-card"><div class="toolbar"><div class="search"><input placeholder="Search employee or request..."></div><div class="filters"><select><option>All leave types</option><option>Annual leave</option><option>Sick leave</option><option>Unpaid leave</option></select><select><option>All status</option><option>Pending</option><option>Approved</option></select></div></div><table><thead><tr><th>Employee</th><th>Leave type</th><th>Period</th><th>Duration</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead><tbody>
+      <tr><td><div class="person"><div class="avatar">MA</div><b>Nguyen Minh Anh</b></div></td><td>Annual leave</td><td>06 Nov 2026</td><td>1 day</td><td>Personal matters</td><td><span class="badge b-orange">Pending</span></td><td><button class="btn small soft" onclick="approve(this)">Approve</button> <button class="link" onclick="toast('Request details')">View</button></td></tr>
+      <tr><td><div class="person"><div class="avatar">QB</div><b>Tran Quoc Bao</b></div></td><td>Annual leave</td><td>09–10 Nov 2026</td><td>2 days</td><td>Family event</td><td><span class="badge b-orange">Pending</span></td><td><button class="btn small soft" onclick="approve(this)">Approve</button> <button class="link" onclick="toast('Request details')">View</button></td></tr>
+      <tr><td><div class="person"><div class="avatar">TH</div><b>Le Thu Ha</b></div></td><td>Sick leave</td><td>03 Nov 2026</td><td>0.5 day</td><td>Health reason</td><td><span class="badge b-green">Approved</span></td><td><button class="link" onclick="toast('Request details')">View</button></td></tr>
+      </tbody></table></div>
+      <div id="leaveBalances" class="tab-panel card table-card" style="display:none"><table><thead><tr><th>Employee</th><th>Policy</th><th>Entitlement</th><th>Used</th><th>Pending</th><th>Available</th></tr></thead><tbody><tr><td>Nguyen Minh Anh</td><td>Teacher Standard</td><td>12</td><td>3</td><td>1</td><td><b>8 days</b></td></tr><tr><td>Le Thu Ha</td><td>Office Standard</td><td>12</td><td>4</td><td>0</td><td><b>8 days</b></td></tr><tr><td>Vo Ngoc Nam</td><td>Senior Staff</td><td>15</td><td>2</td><td>0</td><td><b>13 days</b></td></tr></tbody></table></div>
+      <div id="leavePolicies" class="tab-panel"><div class="grid three-col"><div class="card panel"><div class="panel-title">Teacher Standard</div><div class="stat-value">12 days</div><div class="panel-sub">Fixed annual entitlement</div><button class="btn small" style="margin-top:14px" onclick="toast('Edit Teacher Standard policy')">Edit policy</button></div><div class="card panel"><div class="panel-title">Office Standard</div><div class="stat-value">12 days</div><div class="panel-sub">Fixed annual entitlement</div><button class="btn small" style="margin-top:14px" onclick="toast('Edit Office Standard policy')">Edit policy</button></div><div class="card panel"><div class="panel-title">Senior Staff</div><div class="stat-value">15 days</div><div class="panel-sub">Fixed annual entitlement</div><button class="btn small" style="margin-top:14px" onclick="toast('Edit Senior Staff policy')">Edit policy</button></div></div></div>
+    </section>
+
+    <!-- TIMESHEET -->
+    <section class="section" id="page-timesheet">
+      <div class="page-head"><div><div class="eyebrow">TEACHING OPERATIONS</div><h1>Teacher Timesheet</h1><div class="subtitle">Đồng bộ chỉ đọc buổi dạy thực tế từ CRM. HRM lưu riêng trạng thái duyệt theo teaching session ID.</div></div><div class="actions"><label class="field" style="margin:0"><span class="panel-sub">Payroll month</span><input id="timesheetMonth" type="month" value="2026-11" onchange="renderTimesheet()"></label><button class="btn" onclick="syncTeachingHours()">↻ Sync CRM</button><button class="btn primary" onclick="approveVisibleTimesheets()">Approve selected</button></div></div>
+      <div id="crmIntegrationState" class="notice integration-state" role="status">Checking CRM connection...</div>
+      <div class="grid stats"><div class="card stat"><div class="stat-top">Completed CRM hours</div><div class="stat-value" id="tsHours">0h</div><div class="stat-foot">CRM Completed sessions · current month</div></div><div class="card stat"><div class="stat-top">Completed sessions</div><div class="stat-value" id="tsSessions">0</div><div class="stat-foot">Unique CRM session IDs</div></div><div class="card stat"><div class="stat-top">Pending HRM approval</div><div class="stat-value" id="tsPending">0</div><div class="stat-foot">Not yet eligible for payroll</div></div><div class="card stat"><div class="stat-top">Ready for payroll</div><div class="stat-value" id="tsApproved">0h</div><div class="stat-foot">Approved hours with salary rates calculated later</div></div></div>
+      <div class="card table-card"><div class="toolbar"><div class="search"><input id="timesheetSearch" placeholder="Search teacher, session or class..." oninput="renderTimesheet()"></div><div class="filters"><select id="timesheetStatus" onchange="renderTimesheet()"><option value="">All statuses</option><option value="Pending approval">Pending approval</option><option value="Approved">Approved</option><option value="Unlinked">Unlinked CRM teacher</option><option value="Rate missing">Rate missing</option></select><select id="timesheetType" onchange="renderTimesheet()"><option value="">All lesson types</option><option value="1-on-1">1-on-1</option><option value="Group">Group</option></select></div></div>
+      <table><thead><tr><th><input id="selectAllTimesheets" type="checkbox" aria-label="Select visible sessions" onchange="toggleTimesheetSelection(this)"></th><th>Session ID</th><th>Teacher</th><th>CRM teacher ID</th><th>Class / subject</th><th>Type</th><th>Date</th><th>Actual time</th><th>Break</th><th>Actual hours</th><th>Rate</th><th>Payroll estimate</th><th>HRM review</th><th>Action</th></tr></thead><tbody id="timesheetRows"></tbody></table></div>
+      <div class="notice" style="margin-top:14px">CRM là nguồn dữ liệu duy nhất cho teaching session; HRM không sửa hoặc xóa session CRM. Duyệt và salary rate được lưu riêng ở HRM theo session ID. Chỉ session duyệt và có rate khớp mới được đưa vào payroll. Office attendance vẫn dùng luồng ca riêng.</div>
+    </section>
+
+    <!-- PAYROLL -->
+    <section class="section" id="page-payroll">
+      <div class="page-head"><div><div class="eyebrow">COMPENSATION</div><h1>Payroll</h1><div class="subtitle">Tính lương giáo viên theo giờ và nhân viên Office theo tháng.</div></div><div class="actions"><button class="btn" onclick="toast('Đã chuẩn bị export payroll')">⇩ Export</button><button class="btn primary" onclick="toast('Payroll run tháng 11/2026 đã được tạo (demo)')">＋ Generate payroll</button></div></div>
+      <div class="grid stats"><div class="card stat"><div class="stat-top">Payroll period</div><div class="stat-value" id="payrollPeriodDisplay" style="font-size:21px">2026-11</div><div class="stat-foot"><span class="badge b-blue">Draft</span></div></div><div class="card stat"><div class="stat-top">Teachers ready</div><div id="payrollTeacherCount" class="stat-value">0</div><div class="stat-foot">Approved sessions + matched rates</div></div><div class="card stat"><div class="stat-top">Blocked sessions</div><div id="payrollBlockedCount" class="stat-value">0</div><div class="stat-foot">Mapping, rate or approval required</div></div><div class="card stat"><div class="stat-top">Teacher gross estimate</div><div id="payrollTeacherGross" class="stat-value">₫0</div><div class="stat-foot">Office payroll remains separate</div></div></div>
+      <div class="tabs"><button class="tab active" onclick="switchTab(this,'payrollSummary')">Payroll summary</button><button class="tab" onclick="switchTab(this,'salaryRates')">Salary rates</button></div>
+      <div id="payrollSummary" class="tab-panel card table-card"><div class="toolbar"><div class="search"><input placeholder="Search employee..."></div><div class="filters"><select><option>All employee types</option><option>Teacher</option><option>Office</option></select><select id="payrollMonth"><option>2026-11</option></select></div></div><table><thead><tr><th>Employee</th><th>Employee type</th><th>Salary basis</th><th>Working / Teaching</th><th>Gross salary</th><th>Allowance</th><th>Deduction</th><th>Net salary</th><th>Status</th></tr></thead><tbody id="payrollRows">
+      <tr><td><div class="person"><div class="avatar">LH</div><b>Le Thu Ha</b></div></td><td>Office</td><td>Monthly</td><td>24 / 26 days</td><td>₫12,000,000</td><td>₫500,000</td><td>₫200,000</td><td><b>₫12,300,000</b></td><td><span class="badge b-blue">Draft</span></td></tr>
+      </tbody></table></div>
+      <div id="salaryRates" class="tab-panel card table-card" style="display:none"><div class="toolbar"><b>HRM salary rates · demo defaults require employee mapping</b><button class="btn small primary" onclick="HrmIntegration.openRateModal()">＋ Add salary rate</button></div><table><thead><tr><th>HRM Teacher</th><th>Subject</th><th>Class type</th><th>Hourly rate</th><th>Effective period</th><th>Status</th><th>Action</th></tr></thead><tbody id="salaryRateRows"></tbody></table></div>
+      <div class="card panel" style="margin-top:14px"><div class="panel-title">Payroll run history</div><div id="payrollRunHistory" class="mt-2"></div></div>
+      <div class="notice" style="margin-top:14px">Teacher payroll is calculated from unique CRM sessions only when the session is completed, its HRM review matches the current CRM facts, and an effective employee/subject/class-type rate exists. Payroll runs are immutable snapshots. Office attendance/payroll remains a separate prototype. Missing mappings, rates or approvals block the teacher payroll run.</div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="section" id="page-settings">
+      <div class="page-head"><div><div class="eyebrow">CONFIGURATION</div><h1>HR Settings</h1><div class="subtitle">Thiết lập chính sách và quy tắc vận hành HRM.</div></div><div class="actions"><button class="btn primary" onclick="toast('Đã lưu cấu hình demo')">Save changes</button></div></div>
+      <div class="grid two-col">
+        <div class="card panel"><div class="panel-head"><div><div class="panel-title">Attendance settings</div><div class="panel-sub">Cấu hình chấm công Office</div></div><span class="badge b-green">MVP</span></div>
+          <div class="form-grid"><div class="field"><label>Default check-in method</label><select><option>GPS + QR Code</option><option>GPS only</option><option>QR only</option></select></div><div class="field"><label>Default grace period (minutes)</label><input type="number" value="5"></div><div class="field"><label>GPS allowed radius (meters)</label><input type="number" value="100"></div><div class="field"><label>Timezone</label><select><option>Asia/Ho_Chi_Minh (UTC+7)</option></select></div></div>
+        </div>
+        <div class="card panel"><div class="panel-head"><div><div class="panel-title">Leave policies</div><div class="panel-sub">Số ngày phép cố định theo nhóm nhân viên</div></div><span class="badge b-blue">Fixed entitlement</span></div>
+          <table><thead><tr><th>Policy</th><th>Employee group</th><th>Days / year</th></tr></thead><tbody><tr><td>Teacher Standard</td><td>Teacher</td><td><input style="width:55px;border:1px solid var(--line);border-radius:6px;padding:5px" value="12"></td></tr><tr><td>Office Standard</td><td>Office</td><td><input style="width:55px;border:1px solid var(--line);border-radius:6px;padding:5px" value="12"></td></tr><tr><td>Senior Staff</td><td>Selected employees</td><td><input style="width:55px;border:1px solid var(--line);border-radius:6px;padding:5px" value="15"></td></tr></tbody></table>
+        </div>
+        <div class="card panel"><div class="panel-head"><div><div class="panel-title">Payroll settings</div><div class="panel-sub">Quy tắc kỳ lương</div></div></div><div class="form-grid"><div class="field"><label>Payroll period</label><select><option>Monthly</option></select></div><div class="field"><label>Currency</label><select><option>VND</option></select></div><div class="field"><label>Office salary basis</label><select><option>Monthly salary / paid working days</option></select></div><div class="field"><label>Teacher salary basis</label><select><option>Approved teaching hours × rate</option></select></div></div></div>
+        <div class="card panel"><div class="panel-head"><div><div class="panel-title">CRM teaching-hours integration</div><div class="panel-sub">Read-only CRM sessions · HRM-owned approval and payroll snapshots</div></div><span id="crmSettingsBadge" class="badge b-gray">Checking</span></div><div id="crmSettingsMessage" class="notice">CRM completed sessions are imported by unique session ID. HRM does not edit CRM lesson, class or attendance data.</div><div id="crmSettingsLastSync" style="margin-top:13px;font-size:11px;color:#667085">No sync recorded yet.</div><button id="crmSettingsSync" class="btn small" style="margin-top:12px">↻ Refresh from CRM</button></div>
+      </div>
+    </section>
+  </div>
+</main>
+</div>
+
+<!-- EMPLOYEE MODAL -->
+<div class="modal-backdrop" id="employeeModal"><div class="modal">
+  <div class="modal-head"><div><h3 id="employeeModalTitle">Add employee</h3><div class="panel-sub">Thông tin hồ sơ nhân sự</div></div><button class="x" onclick="closeModal('employeeModal')">×</button></div>
+  <div class="modal-body"><form id="employeeForm" class="form-grid">
+    <div class="field"><label>Full name *</label><input id="fName" required placeholder="Enter full name"></div>
+    <div class="field"><label>Employee code *</label><input id="fCode" required placeholder="e.g. TEA-004"></div>
+    <div class="field"><label>Employee type *</label><select id="fType"><option>Teacher</option><option>Office</option></select></div>
+    <div class="field"><label>Department / Subject</label><input id="fDept" placeholder="English, Physics, Operations..."></div>
+    <div class="field"><label>Employment type</label><select id="fEmployment"><option>Full-time</option><option>Part-time</option><option>Collaborator</option></select></div>
+    <div class="field"><label>Salary type</label><select id="fSalary"><option>Hourly</option><option>Monthly</option></select></div>
+    <div class="field full" id="crmTeacherField"><label>Linked CRM teacher</label><select id="fCrmTeacher"><option value="">Select CRM teacher...</option></select><small class="field-help">Timesheet only imports this CRM teacher's completed teaching sessions. Link a teacher explicitly before reviewing or paying their hours.</small></div>
+    <div class="field"><label>Email</label><input type="email" placeholder="name@educenter.vn"></div>
+    <div class="field"><label>Phone</label><input placeholder="Phone number"></div>
+    <div class="field"><label>Join date</label><input type="date" value="2026-11-01"></div>
+    <div class="field"><label>Status</label><select><option>Active</option><option>Inactive</option></select></div>
+    <div class="field full"><div class="notice">Prototype demo: hồ sơ được lưu trong trạng thái giao diện hiện tại, chưa ghi vào database.</div></div>
+  </form></div>
+  <div class="modal-foot"><button class="btn" onclick="closeModal('employeeModal')">Cancel</button><button class="btn primary" onclick="saveEmployee()">Save employee</button></div>
+</div></div>
+
+<!-- SALARY RATE MODAL -->
+<div class="modal-backdrop" id="rateModal"><div class="modal">
+  <div class="modal-head"><div><h3 id="rateModalTitle">Add salary rate</h3><div class="panel-sub">Rate applies to CRM completed sessions matching employee, subject and class type.</div></div><button class="x" onclick="closeModal('rateModal')">×</button></div>
+  <div class="modal-body"><form id="salaryRateForm" class="form-grid">
+    <div class="field"><label>HRM teacher *</label><select id="rateEmployee" required></select></div>
+    <div class="field"><label>Subject *</label><select id="rateSubject" required></select></div>
+    <div class="field"><label>Class type *</label><select id="rateClassType" required><option>Group</option><option>1-on-1</option></select></div>
+    <div class="field"><label>Hourly rate (VND) *</label><input id="rateHourly" type="number" min="1" step="1" required></div>
+    <div class="field"><label>Effective from *</label><input id="rateStart" type="date" required></div>
+    <div class="field"><label>Effective to</label><input id="rateEnd" type="date"></div>
+    <div class="field"><label>Status</label><select id="rateActive"><option value="true">Active</option><option value="false">Inactive</option></select></div>
+  </form></div>
+  <div class="modal-foot"><button class="btn" onclick="closeModal('rateModal')">Cancel</button><button class="btn primary" onclick="HrmIntegration.saveRate()">Save rate</button></div>
+</div></div>
+
+<!-- SHIFT MODAL -->
+<div class="modal-backdrop" id="shiftModal"><div class="modal">
+  <div class="modal-head"><h3>Create work shift</h3><button class="x" onclick="closeModal('shiftModal')">×</button></div>
+  <div class="modal-body"><div class="form-grid"><div class="field"><label>Shift name</label><input id="shiftName" placeholder="e.g. Evening shift"></div><div class="field"><label>Shift code</label><input placeholder="SHIFT-04"></div><div class="field"><label>Start time</label><input type="time" value="13:00"></div><div class="field"><label>End time</label><input type="time" value="21:00"></div><div class="field"><label>Break (minutes)</label><input type="number" value="60"></div><div class="field"><label>Grace period (minutes)</label><input type="number" value="5"></div></div></div>
+  <div class="modal-foot"><button class="btn" onclick="closeModal('shiftModal')">Cancel</button><button class="btn primary" onclick="closeModal('shiftModal');toast('Đã tạo ca làm việc demo')">Save shift</button></div>
+</div></div>
+
+<!-- LEAVE MODAL -->
+<div class="modal-backdrop" id="leaveModal"><div class="modal">
+  <div class="modal-head"><h3>Create leave request</h3><button class="x" onclick="closeModal('leaveModal')">×</button></div>
+  <div class="modal-body"><div class="form-grid"><div class="field"><label>Employee</label><select><option>Nguyen Minh Anh</option><option>Tran Quoc Bao</option><option>Le Thu Ha</option></select></div><div class="field"><label>Leave type</label><select><option>Annual leave</option><option>Sick leave</option><option>Unpaid leave</option></select></div><div class="field"><label>From</label><input type="date" value="2026-11-09"></div><div class="field"><label>To</label><input type="date" value="2026-11-09"></div><div class="field full"><label>Reason</label><textarea placeholder="Enter reason..."></textarea></div></div></div>
+  <div class="modal-foot"><button class="btn" onclick="closeModal('leaveModal')">Cancel</button><button class="btn primary" onclick="closeModal('leaveModal');toast('Đã tạo đơn nghỉ demo')">Submit request</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+<script src="assets/js/services/hrm-crm-bridge.js"></script>
+<script src="assets/js/hrm-integration.js"></script>
+<script>
+let editingRow=null;
+const titles={dashboard:'HRM Dashboard',employees:'Employees',attendance:'Attendance',shifts:'Work Shifts',leave:'Leave Management',timesheet:'Teacher Timesheet',payroll:'Payroll',settings:'HR Settings'};
+function navigate(page){
+ document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+ document.getElementById('page-'+page).classList.add('active');
+ document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+ document.getElementById('crumb').textContent=titles[page]||'HRM';
+ document.getElementById('sidebar').classList.remove('open');
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.page)));
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
+function openEmployeeModal(){editingRow=null;document.getElementById('employeeModalTitle').textContent='Add employee';document.getElementById('employeeForm').reset();document.getElementById('employeeModal').classList.add('show')}
+function editEmployee(name,code,type,dept,salary){editingRow={name,code};document.getElementById('employeeModalTitle').textContent='Edit employee';document.getElementById('fName').value=name;document.getElementById('fCode').value=code;document.getElementById('fType').value=type;document.getElementById('fDept').value=dept;document.getElementById('fSalary').value=salary;document.getElementById('employeeModal').classList.add('show')}
+function saveEmployee(){
+ const form=document.getElementById('employeeForm');if(!form.reportValidity())return;
+ const name=document.getElementById('fName').value.trim(),code=document.getElementById('fCode').value.trim(),type=document.getElementById('fType').value,dept=document.getElementById('fDept').value||'General',salary=document.getElementById('fSalary').value;
+ if(editingRow){
+  const row=[...document.querySelectorAll('#employeeRows tr')].find(r=>r.children[1].textContent===editingRow.code);
+  if(row){row.children[0].querySelector('b').textContent=name;row.children[1].textContent=code;row.children[2].textContent=dept;row.children[4].textContent=salary;}
+  toast('Employee updated');
+ }else{
+  const tr=document.createElement('tr');tr.dataset.type=type;tr.dataset.status='Active';
+  const initials=name.split(' ').slice(-2).map(x=>x[0]).join('').toUpperCase();
+  tr.innerHTML=`<td><div class="person"><div class="avatar">${escapeHtml(initials)}</div><div><b>${escapeHtml(name)}</b><small>New employee</small></div></div></td><td>${escapeHtml(code)}</td><td>${escapeHtml(dept)}</td><td>Full-time</td><td>${escapeHtml(salary)}</td><td><span class="badge b-green">Active</span></td><td><button class="link" data-edit-employee>Edit</button></td>`;
+  tr.querySelector('[data-edit-employee]').addEventListener('click',()=>editEmployee(name,code,type,dept,salary));
+  document.getElementById('employeeRows').prepend(tr);toast('Employee created');
+ }
+ closeModal('employeeModal');filterEmployees();
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function escapeJs(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+function filterEmployees(){
+ const q=(document.getElementById('employeeSearch').value||'').toLowerCase(),type=document.getElementById('employeeTypeFilter').value,status=document.getElementById('employeeStatusFilter').value;let count=0;
+ document.querySelectorAll('#employeeRows tr').forEach(r=>{const ok=(!q||r.innerText.toLowerCase().includes(q))&&(!type||r.dataset.type===type)&&(!status||r.dataset.status===status);r.style.display=ok?'':'none';if(ok)count++});
+ document.getElementById('employeeCount').textContent=`Showing ${count} employees`;
+}
+function resetEmployeeFilters(){document.getElementById('employeeSearch').value='';document.getElementById('employeeTypeFilter').value='';document.getElementById('employeeStatusFilter').value='';filterEmployees()}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+function openShiftModal(){document.getElementById('shiftModal').classList.add('show')}
+function openLeaveModal(){document.getElementById('leaveModal').classList.add('show')}
+function switchTab(btn,id){const parent=btn.parentElement;parent.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');const section=btn.closest('.section');section.querySelectorAll('.tab-panel').forEach(p=>p.style.display=p.id===id?'':'none')}
+function approve(btn){const row=btn.closest('tr');const statusCell=[...row.children].find(td=>td.querySelector('.badge'));if(statusCell){statusCell.innerHTML='<span class="badge b-green">Approved</span>'}btn.remove();toast('Đã phê duyệt (demo)')}
+document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+HrmIntegration.init();
+</script>
+</body>
+</html>

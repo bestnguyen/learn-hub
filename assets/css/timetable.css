@@ -1,0 +1,24 @@
+.timetable-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 120px 44px;gap:12px;align-items:end;margin-bottom:12px}
+.timetable-filters>div{min-width:0}
+.timetable-filters .btn{width:44px;height:44px;padding:0}
+.timetable-summary{font-size:13px;color:var(--muted);margin:12px 0 20px}
+#center-timetable{background:#fff;--fc-border-color:var(--line);--fc-button-bg-color:var(--blue);--fc-button-border-color:var(--blue);--fc-event-bg-color:#edf1ff;--fc-event-border-color:#4263eb;--fc-event-text-color:#263eaa;--fc-today-bg-color:#f0faf5}
+#center-timetable .fc-toolbar-title{font:700 19px Manrope,sans-serif;letter-spacing:0}
+#center-timetable .fc-button{min-width:44px;min-height:44px;border-radius:6px;font-size:13px}
+#center-timetable .fc-event{cursor:pointer;border-radius:4px;overflow-wrap:anywhere}
+#center-timetable .fc-event-title{white-space:normal;font-weight:600}
+#center-timetable .fc-timegrid-event{min-height:24px}
+#center-timetable .fc-col-header-cell-cushion,#center-timetable .fc-list-day-text,#center-timetable .fc-list-day-side-text{color:var(--ink);text-decoration:none}
+#center-timetable .schedule-conflict{background:#fff0f0;border-color:var(--red);color:#9e2525}
+#center-timetable .fc-list-event:hover td{background:#f6f8fb}
+@media(max-width:767.98px){
+  .responsive-records tbody td.record-resource{display:flex!important;align-items:center}
+  .record-resource .btn{width:44px;height:44px;padding:0;display:grid;place-items:center}
+  .timetable-filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .timetable-filters .btn{justify-self:end}
+  #center-timetable .fc-header-toolbar{flex-wrap:wrap;gap:12px}
+  #center-timetable .fc-toolbar-title{font-size:17px}
+  #center-timetable .fc-timegrid-slot-label{font-size:12px}
+  #center-timetable .fc-event-title{font-size:12px}
+  #center-timetable .fc-list-event-time{white-space:normal}
+}
