@@ -10,7 +10,7 @@ window.FORM_CONFIG = {
     {name:"email",label:"Email",type:"email"},
     {name:"school",label:"Current school",type:"text"},
     {name:"program",label:"Interested program",type:"select",options:PROGRAM_OPTIONS},
-    {name:"subjects",label:"Interested subjects",type:"multiselect",options:["Math","Computer Science","Physics","Biology","Chemistry","Business","Economics","Language Literature","English","Chinese","Spanish","French"]},
+    {name:"subjects",label:"Interested subjects",type:"multiselect-data",source:"subjects",value:"name",display:"name",filter:{status:"Active"}},
     {name:"status",label:"Lead status",type:"select",options:["New","Contacted","Consulting","Trial","Won","Lost"]},
     {name:"owner_id",label:"Sales owner",type:"select-data",source:"employees",display:"full_name",filter:{role:"Sales",status:"Active"},required:true},
     {name:"notes",label:"Notes",type:"textarea",full:true}
@@ -37,10 +37,12 @@ window.FORM_CONFIG = {
   students:{title:"Learner",fields:[
     {name:"customer_id",label:"Family customer",type:"select-data",source:"customers",display:"family_name",required:true},
     {name:"full_name",label:"Learner full name",type:"text",required:true},
+    {name:"date_of_birth",label:"Date of birth",type:"date"},
+    {name:"gender",label:"Gender",type:"select",options:["Female","Male","Non-binary","Prefer not to say"]},
     {name:"grade",label:"Current grade",type:"select",options:["Grade 1","Grade 2","Grade 3","Grade 4","Grade 5","Grade 6","Grade 7","Grade 8","Grade 9","Grade 10","Grade 11","Grade 12"]},
     {name:"school",label:"Current school",type:"text"},
-    {name:"program",label:"Program",type:"select",options:PROGRAM_OPTIONS},
-    {name:"status",label:"Learning status",type:"select",options:["Active","On hold","Completed"]}
+    {name:"status",label:"Learning status",type:"select",options:["Active","On hold","Completed"]},
+    {name:"description",label:"Description",type:"textarea",full:true}
   ]},
   customers:{title:"Family customer",fields:[
     {name:"family_name",label:"Family name",type:"text",required:true},
@@ -61,9 +63,20 @@ window.FORM_CONFIG = {
     {name:"full_name",label:"Teacher name",type:"text",required:true},
     {name:"phone",label:"Phone",type:"tel"},
     {name:"email",label:"Email",type:"email"},
-    {name:"subjects",label:"Teaching subjects",type:"text"},
+    {name:"subjects",label:"Teaching subjects",type:"multiselect-data",source:"subjects",value:"name",display:"name",filter:{status:"Active"}},
+    {name:"branch_ids",label:"Branches",type:"multiselect-data",source:"branches",display:"name",filter:{status:"Active"}},
     {name:"status",label:"Status",type:"select",required:true,options:["Active","Inactive"]},
     {name:"notes",label:"Notes",type:"textarea",full:true}
+  ]},
+  branches:{title:"Branch",fields:[
+    {name:"name",label:"Branch name",type:"text",required:true},
+    {name:"address",label:"Address",type:"text"},
+    {name:"phone",label:"Phone",type:"tel"},
+    {name:"status",label:"Status",type:"select",required:true,options:["Active","Inactive"]}
+  ]},
+  subjects:{title:"Subject",fields:[
+    {name:"name",label:"Subject name",type:"text",required:true},
+    {name:"status",label:"Status",type:"select",required:true,options:["Active","Inactive"]}
   ]},
   teaching_sessions:{title:"Teaching session",fields:[
     {name:"class_id",label:"Class",type:"select-data",source:"classes",display:"name",required:true},
@@ -77,6 +90,7 @@ window.FORM_CONFIG = {
   ]},
   rooms:{title:"Room",fields:[
     {name:"name",label:"Room name",type:"text",required:true},
+    {name:"branch_id",label:"Branch",type:"select-data",source:"branches",display:"name",filter:{status:"Active"}},
     {name:"type",label:"Type",type:"select",required:true,options:["Classroom","Online"]},
     {name:"capacity",label:"Seat capacity",type:"number",min:1,step:1},
     {name:"location",label:"Location",type:"text"},
@@ -85,7 +99,9 @@ window.FORM_CONFIG = {
   ]},
   classes:{title:"Class",fields:[
     {name:"name",label:"Class name",type:"text",required:true},
-    {name:"subject",label:"Subject",type:"select",options:["Math","Computer Science","Physics","Biology","Chemistry","English","Chinese","Spanish","French"]},
+    {name:"branch_id",label:"Branch",type:"select-data",source:"branches",display:"name",filter:{status:"Active"}},
+    {name:"type",label:"Type",type:"select",options:["Online","Offline"],required:true},
+    {name:"subject",label:"Subject",type:"select-data",source:"subjects",value:"name",display:"name",filter:{status:"Active"}},
     {name:"program",label:"Program",type:"select",options:PROGRAM_OPTIONS},
     {name:"mode",label:"Learning mode",type:"select",options:["Group","1-on-1"]},
     {name:"teacher_id",label:"Teacher",type:"select-data",source:"teachers",display:"full_name",required:true},

@@ -5,6 +5,17 @@ window.Store = {
   migrateResources(){
     this.data.teaching_sessions=this.data.teaching_sessions||[];
     this.data.teachers=this.data.teachers||[];this.data.rooms=this.data.rooms||[];
+    this.data.branches=this.data.branches||structuredClone(window.DEMO_SEED.branches||[]);
+    this.data.subjects=this.data.subjects||structuredClone(window.DEMO_SEED.subjects||[]);
+    const ensureSubject=name=>{
+      let label=String(name||"").trim();if(!label)return;
+      let subject=this.list("subjects").find(record=>record.name.trim().toLowerCase()===label.toLowerCase());
+      if(subject)return subject;
+      let next=this.list("subjects").length+1;while(this.list("subjects").some(record=>record.id===`SUB-MIG-${next}`))next++;
+      subject={id:`SUB-MIG-${next}`,name:label,status:"Active"};this.data.subjects.push(subject);return subject;
+    };
+    this.list("leads").forEach(record=>(Array.isArray(record.subjects)?record.subjects:record.subjects?[record.subjects]:[]).forEach(ensureSubject));
+    this.list("classes").forEach(record=>{if(record.subject)ensureSubject(record.subject)});
     const ensure=(entity,name)=>{
       let resource=this.list(entity).find(record=>(record.full_name||record.name).trim().toLowerCase()===name.toLowerCase());
       if(resource)return resource.id;
@@ -15,6 +26,24 @@ window.Store = {
     };
     this.list("classes").forEach(record=>{if(!record.teacher_id&&record.teacher?.trim())record.teacher_id=ensure("teachers",record.teacher.trim())});
     this.list("schedules").forEach(record=>{if(!record.room_id&&record.room?.trim()){let name=record.room.trim();if(/^https?:\/\//i.test(name)){record.meeting_link=record.meeting_link||name;name="Online"}record.room_id=ensure("rooms",name)}});
+    this.list("rooms").forEach(room=>{if(!room.branch_id)room.branch_id=""});
+    this.list("classes").forEach(classRecord=>{
+      if(classRecord.branch_id)return;
+      let branchIds=new Set(this.list("schedules").filter(schedule=>schedule.class_id===classRecord.id).map(schedule=>this.list("rooms").find(room=>room.id===schedule.room_id)?.branch_id).filter(Boolean));
+      classRecord.branch_id=branchIds.size===1?[...branchIds][0]:"";
+    });
+    this.list("classes").forEach(classRecord=>{
+      if(["Online","Offline"].includes(classRecord.type))return;
+      let schedules=this.list("schedules").filter(schedule=>schedule.class_id===classRecord.id),rooms=schedules.map(schedule=>this.list("rooms").find(room=>room.id===schedule.room_id)).filter(Boolean);
+      classRecord.type=rooms.length&&rooms.every(room=>room.type==="Online")?"Online":"Offline";
+    });
+    this.list("teachers").forEach(record=>{
+      let subjects=Array.isArray(record.subjects)?record.subjects:String(record.subjects||"").split(",");
+      record.subjects=subjects.map(subject=>String(subject).trim()).filter(Boolean);
+      record.subjects.forEach(ensureSubject);
+      if(!Array.isArray(record.branch_ids))record.branch_ids=record.branch_ids?[record.branch_ids]:[];
+      record.created_at=record.created_at||new Date().toISOString();record.updated_at=record.updated_at||record.created_at;
+    });
   },
   migrateWorkforce(){
     if(!this.data.employees)this.data.employees=structuredClone(window.DEMO_SEED.employees||[{id:"EMP-001",full_name:"Admin Demo",role:"Manager",status:"Active"}]);
@@ -36,7 +65,7 @@ window.Store = {
   save(){localStorage.setItem(this.key,JSON.stringify(this.data))},
   reset(){this.data=JSON.parse(JSON.stringify(window.DEMO_SEED));this.migrateResources();this.migrateWorkforce();this.save()},
   list(entity){return this.data[entity]||[]},
-  add(entity,record){const prefix={leads:"LD",customers:"CUS",students:"ST",contracts:"CT",classes:"CL",schedules:"SC",enrollments:"EN",teachers:"TCH",rooms:"RM",employees:"EMP",tasks:"TSK",teaching_sessions:"TS"}[entity]||"ID";const next=this.list(entity).length+1;record.id=record.id||`${prefix}-${String(Date.now()).slice(-5)}${next}`;this.data[entity].unshift(record);this.save();return record},
+  add(entity,record){const prefix={leads:"LD",customers:"CUS",students:"ST",contracts:"CT",classes:"CL",schedules:"SC",enrollments:"EN",teachers:"TCH",rooms:"RM",branches:"BR",subjects:"SUB",employees:"EMP",tasks:"TSK",teaching_sessions:"TS"}[entity]||"ID";const next=this.list(entity).length+1;record.id=record.id||`${prefix}-${String(Date.now()).slice(-5)}${next}`;this.data[entity].unshift(record);this.save();return record},
   update(entity,id,record){const arr=this.list(entity);const i=arr.findIndex(x=>x.id===id);if(i>=0){arr[i]={...arr[i],...record};this.save();return arr[i]}return null},
   remove(entity,id){this.data[entity]=this.list(entity).filter(x=>x.id!==id);this.save()}
 };

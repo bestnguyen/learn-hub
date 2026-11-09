@@ -60,6 +60,50 @@ test('owner and assignee dropdowns include only active Sales employees', () => {
   }
 });
 
+test('teacher profiles keep audit dates and support multiple branches and subjects', () => {
+  const { Store, Workforce } = fixture();
+  const teacher = Store.list('teachers')[0];
+  const createdAt = teacher.created_at;
+  assert.ok(createdAt);
+  assert.ok(teacher.updated_at);
+  assert.ok(Array.isArray(teacher.branch_ids));
+  assert.ok(Array.isArray(teacher.subjects));
+  const saved = Workforce.save('teachers', {
+    full_name: teacher.full_name, phone: teacher.phone, email: teacher.email,
+    subjects: ['Physics', 'Math'], branch_ids: ['BR-001', 'BR-002'], status: teacher.status
+  }, teacher.id);
+  assert.equal(saved.created_at, createdAt);
+  assert.ok(saved.updated_at);
+  assert.deepEqual(Array.from(saved.branch_ids), ['BR-001', 'BR-002']);
+  assert.deepEqual(Array.from(saved.subjects), ['Physics', 'Math']);
+});
+
+test('branch and subject catalogs are manager-controlled and reject duplicate names', () => {
+  const { Workforce } = fixture();
+  assert.throws(() => Workforce.save('branches', { name: 'Central Branch', status: 'Active' }), /already exists/);
+  assert.throws(() => Workforce.save('subjects', { name: 'Math', status: 'Active' }), /already exists/);
+  assert.equal(Workforce.save('branches', { name: 'North Branch', address: '1 North Road', phone: '024 5555 0303', status: 'Active' }).name, 'North Branch');
+  Workforce.setActor('EMP-002');
+  assert.throws(() => Workforce.save('branches', { name: 'Sales Branch', status: 'Active' }), /permission/);
+});
+
+test('learner age is calculated from date of birth and programs come from active class enrollments', () => {
+  const { Store, Workforce, FORM_CONFIG, UI } = fixture();
+  const learner = Store.list('students').find(record => record.id === 'ST-001');
+  assert.equal(Workforce.ageFromDate('2010-11-10', new Date(2026, 10, 9)), 15);
+  assert.equal(Workforce.ageFromDate('2010-10-10', new Date(2026, 10, 9)), 16);
+  assert.equal(Workforce.ageFromDate('2030-01-01', new Date(2026, 10, 9)), null);
+  assert.deepEqual(Array.from(Workforce.studentPrograms(learner.id)), ['IB']);
+  assert.ok(!FORM_CONFIG.students.fields.some(field => field.name === 'program'));
+  assert.ok(UI.form('students', learner).includes('Description'));
+  assert.ok(!UI.form('students', learner).includes('Program'));
+  const saved = Workforce.save('students', {
+    ...learner, date_of_birth: '2010-11-10', gender: 'Female', description: 'Prefers morning classes.'
+  }, learner.id);
+  assert.equal(saved.date_of_birth, '2010-11-10');
+  assert.equal(saved.description, 'Prefers morning classes.');
+});
+
 test('only managers create employees/tasks; assignments reject non-Sales employees', () => {
   const { Workforce } = fixture();
   assert.throws(() => createTask(Workforce, { assignee_id: 'EMP-001' }), /active Sales/);

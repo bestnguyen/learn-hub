@@ -30,19 +30,37 @@ window.DEMO_SEED = {
     {id:"EN-003",contract_id:"CT-001",student_id:"ST-002",course:"English",mode:"Group",sessions:16,class_id:"CL-003",status:"Active"}
   ],
   teachers:[
-    {id:"TCH-001",full_name:"David Nguyen",phone:"0905 111 111",email:"david@example.com",subjects:"Physics",status:"Active"},
-    {id:"TCH-002",full_name:"Sarah Pham",phone:"0905 222 222",email:"sarah@example.com",subjects:"Math",status:"Active"},
-    {id:"TCH-003",full_name:"Mai Hoang",phone:"0905 333 333",email:"mai@example.com",subjects:"English",status:"Active"}
+    {id:"TCH-001",full_name:"David Nguyen",phone:"0905 111 111",email:"david@example.com",subjects:"Physics",branch_ids:["BR-001"],status:"Active",created_at:"2026-10-01T09:00:00.000Z",updated_at:"2026-10-01T09:00:00.000Z"},
+    {id:"TCH-002",full_name:"Sarah Pham",phone:"0905 222 222",email:"sarah@example.com",subjects:"Math",branch_ids:["BR-001","BR-002"],status:"Active",created_at:"2026-10-02T09:00:00.000Z",updated_at:"2026-10-02T09:00:00.000Z"},
+    {id:"TCH-003",full_name:"Mai Hoang",phone:"0905 333 333",email:"mai@example.com",subjects:"English",branch_ids:["BR-002"],status:"Active",created_at:"2026-10-03T09:00:00.000Z",updated_at:"2026-10-03T09:00:00.000Z"}
+  ],
+  branches:[
+    {id:"BR-001",name:"Central Branch",address:"12 Education Street",phone:"024 5555 0101",status:"Active"},
+    {id:"BR-002",name:"West Lake Branch",address:"28 Lakeside Road",phone:"024 5555 0202",status:"Active"}
+  ],
+  subjects:[
+    {id:"SUB-001",name:"Math",status:"Active"},
+    {id:"SUB-002",name:"Computer Science",status:"Active"},
+    {id:"SUB-003",name:"Physics",status:"Active"},
+    {id:"SUB-004",name:"Biology",status:"Active"},
+    {id:"SUB-005",name:"Chemistry",status:"Active"},
+    {id:"SUB-006",name:"Business",status:"Active"},
+    {id:"SUB-007",name:"Economics",status:"Active"},
+    {id:"SUB-008",name:"Language Literature",status:"Active"},
+    {id:"SUB-009",name:"English",status:"Active"},
+    {id:"SUB-010",name:"Chinese",status:"Active"},
+    {id:"SUB-011",name:"Spanish",status:"Active"},
+    {id:"SUB-012",name:"French",status:"Active"}
   ],
   rooms:[
-    {id:"RM-201",name:"Room 201",type:"Classroom",capacity:12,location:"Floor 2",status:"Active"},
-    {id:"RM-105",name:"Room 105",type:"Classroom",capacity:8,location:"Floor 1",status:"Active"},
+    {id:"RM-201",name:"Room 201",branch_id:"BR-001",type:"Classroom",capacity:12,location:"Floor 2",status:"Active"},
+    {id:"RM-105",name:"Room 105",branch_id:"BR-002",type:"Classroom",capacity:8,location:"Floor 1",status:"Active"},
     {id:"RM-ONLINE",name:"Online",type:"Online",capacity:"",location:"Online",status:"Active"}
   ],
   classes:[
-    {id:"CL-001",name:"IB Physics G1",subject:"Physics",program:"IB",mode:"Group",teacher:"David Nguyen",capacity:10,status:"Active"},
-    {id:"CL-002",name:"IB Math 1-on-1",subject:"Math",program:"IB",mode:"1-on-1",teacher:"Sarah Pham",capacity:1,status:"Active"},
-    {id:"CL-003",name:"English G7",subject:"English",program:"General",mode:"Group",teacher:"Mai Hoang",capacity:8,status:"Active"}
+    {id:"CL-001",name:"IB Physics G1",branch_id:"BR-001",type:"Offline",subject:"Physics",program:"IB",mode:"Group",teacher:"David Nguyen",capacity:10,status:"Active"},
+    {id:"CL-002",name:"IB Math 1-on-1",branch_id:"BR-001",type:"Online",subject:"Math",program:"IB",mode:"1-on-1",teacher:"Sarah Pham",capacity:1,status:"Active"},
+    {id:"CL-003",name:"English G7",branch_id:"BR-002",type:"Offline",subject:"English",program:"General",mode:"Group",teacher:"Mai Hoang",capacity:8,status:"Active"}
   ],
   schedules:[
     {id:"SC-001",class_id:"CL-001",day:"Tuesday",start:"17:00",end:"18:30",room:"Room 201",start_date:"2026-11-03"},

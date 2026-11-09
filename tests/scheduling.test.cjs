@@ -45,6 +45,11 @@ test('new seed links teachers and rooms without duplicating them', () => {
   assert.equal(Store.list('teachers').length, 3);
   assert.equal(Store.list('rooms').length, 3);
   assert.equal(Store.list('classes')[0].teacher_id, 'TCH-001');
+  assert.equal(Store.list('classes').find(record => record.id === 'CL-001').type, 'Offline');
+  assert.equal(Store.list('classes').find(record => record.id === 'CL-002').type, 'Online');
+  assert.equal(Store.list('classes').find(record => record.id === 'CL-001').branch_id, 'BR-001');
+  assert.equal(Store.list('classes').find(record => record.id === 'CL-003').branch_id, 'BR-002');
+  assert.equal(Store.list('rooms').find(record => record.id === 'RM-201').branch_id, 'BR-001');
   assert.equal(Store.list('schedules')[0].room_id, 'RM-201');
   assert.match(Store.add('teachers', { full_name: 'New Teacher' }).id, /^TCH-/);
   assert.match(Store.add('rooms', { name: 'New Room' }).id, /^RM-/);
@@ -75,6 +80,7 @@ test('teacher and physical room conflicts are independent; online space can be s
 test('time, capacity and class reassignment rules protect existing schedules', () => {
   const { Store, Scheduling } = fixture();
   const base = { ...Store.list('schedules')[0] };
+  Store.update('rooms', 'RM-105', { branch_id: 'BR-001' });
   assert.match(Scheduling.validate('schedules', { ...base, start: '19:00', end: '18:00' }), /End time/);
   assert.match(Scheduling.validate('schedules', { ...base, room_id: 'RM-105' }), /capacity/);
   assert.match(Scheduling.validate('rooms', { name: 'Room 201', type: 'Classroom', capacity: 5 }, 'RM-201'), /capacity/);
@@ -82,6 +88,19 @@ test('time, capacity and class reassignment rules protect existing schedules', (
   Store.add('schedules', { ...base, id: 'SC-OTHER', class_id: 'CL-002', room_id: 'RM-105' });
   const otherClass = Store.list('classes').find(record => record.id === 'CL-002');
   assert.match(Scheduling.validate('classes', { ...otherClass, teacher_id: 'TCH-001' }, 'CL-002'), /already assigned/);
+  assert.match(Scheduling.validate('classes', { ...otherClass, type: 'Hybrid' }, 'CL-002'), /Online or Offline/);
+  assert.equal(Scheduling.validate('classes', { ...otherClass, type: 'Offline' }, 'CL-002'), '');
+});
+
+test('schedule room must belong to the assigned class branch when both are specified', () => {
+  const { Store, Scheduling } = fixture();
+  const schedule = {
+    class_id: 'CL-002', day: 'Friday', start: '10:00', end: '11:00',
+    room_id: 'RM-105', start_date: '2026-11-06', status: 'Active'
+  };
+  assert.match(Scheduling.validate('schedules', schedule), /room from the class branch/);
+  Store.update('rooms', 'RM-105', { branch_id: '' });
+  assert.equal(Scheduling.validate('schedules', schedule), '');
 });
 
 test('calendar events honor filters, cancellations and inclusive recurrence end dates', () => {

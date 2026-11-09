@@ -2,6 +2,8 @@
 
 A lightweight, browser-based SPA prototype for validating an EdTech CRM workflow with stakeholders.
 
+See [CRM_USER_GUIDE.md](CRM_USER_GUIDE.md) for user instructions, workflows, and detailed role permissions.
+
 ## Run locally
 1. Extract the ZIP file.
 2. Open `index.html` (Admin), `manager.html` (Manager) or `sales.html` (Sales) in Chrome, Edge or Firefox.
